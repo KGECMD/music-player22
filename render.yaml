@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: harmony-v7
+    name: harmony-v8
     env: node
     rootDir: .
     buildCommand: npm install

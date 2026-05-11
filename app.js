@@ -1,51 +1,45 @@
 let queue = [];
-let current = null;
 
 function view(v){
-  document.querySelectorAll(".view").forEach(x => x.classList.remove("active"));
-  document.getElementById(v+"View").classList.add("active");
+  document.querySelectorAll(".view")
+    .forEach(x => x.classList.remove("active"));
+
+  document.getElementById(v).classList.add("active");
 }
 
 async function search(){
   const q = document.getElementById("q").value;
 
-  const res = await fetch("/api/audius?q="+q);
+  const res = await fetch("/api/audius?q=" + q);
   const data = await res.json();
 
   const results = document.getElementById("results");
   results.innerHTML = "";
 
-  data.data.slice(0,10).forEach(track => {
+  data.forEach(t => {
     const div = document.createElement("div");
     div.className = "card";
+    div.innerHTML = `${t.title} - ${t.artist}`;
 
-    div.innerHTML = `
-      <b>${track.title}</b><br/>
-      <small>${track.user?.name || ""}</small>
-    `;
-
-    div.onclick = () => play(track);
+    div.onclick = () => play(t);
 
     results.appendChild(div);
   });
 }
 
-function play(track){
-  current = track;
+function play(t){
+  document.getElementById("now").innerText = t.title;
 
-  document.getElementById("now").innerText =
-    track.title;
+  const audio = document.getElementById("audio");
+  audio.src = t.stream;
+  audio.play();
 
-  // Audius full playback (REAL audio)
-  document.getElementById("audius").src =
-    "https://audius.co/embed/track/"+track.id;
-
-  queue.push(track);
+  queue.push(t);
   renderQueue();
 }
 
 function renderQueue(){
-  const q = document.getElementById("queue");
+  const q = document.getElementById("queueList");
   q.innerHTML = "";
 
   queue.forEach(t => {

@@ -1,62 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8" />
-<title>Harmony Player v5</title>
+<meta charset="UTF-8">
+<title>Harmony v6</title>
 
 <style>
-body {
+body{
   margin:0;
   font-family:system-ui;
-  background:#0a0a0a;
+  background:#0b0b0b;
   color:white;
   display:grid;
-  grid-template-columns:320px 1fr 420px;
+  grid-template-columns:320px 1fr;
   height:100vh;
 }
 
-.panel { padding:14px; border-right:1px solid #222; }
-.glass { background:rgba(255,255,255,0.05); backdrop-filter:blur(18px); }
+.panel{padding:14px;border-right:1px solid #222}
 
-input {
+input{
   width:100%;
   padding:12px;
   background:#111;
   border:1px solid #333;
   color:white;
-  border-radius:10px;
 }
 
-button {
+button{
   width:100%;
   margin-top:8px;
   padding:10px;
-  border-radius:10px;
   background:#1a1a1a;
-  color:white;
   border:1px solid #333;
+  color:white;
 }
 
-.item {
-  padding:10px;
+.item{
   margin-top:10px;
+  padding:10px;
   background:#111;
   border-radius:10px;
   cursor:pointer;
 }
 
-iframe {
+iframe{
   width:100%;
-  height:100%;
+  height:50%;
   border:none;
+  margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="panel glass">
-  <h2>Harmony v5</h2>
+<div class="panel">
+  <h2>Harmony v6</h2>
 
   <input id="q" placeholder="Search music..." />
   <button onclick="search()">Search</button>
@@ -64,50 +62,51 @@ iframe {
   <div id="results"></div>
 </div>
 
-<div class="panel glass">
+<div class="panel">
   <h3>Now Playing</h3>
   <div id="now">Nothing</div>
 
-  <audio id="audio" controls></audio>
-</div>
-
-<div>
-  <iframe id="frame"></iframe>
+  <iframe id="spotify"></iframe>
+  <iframe id="audius"></iframe>
 </div>
 
 <script>
-async function search() {
-  const q = document.getElementById("q").value;
+function search(){
+  const q=document.getElementById("q").value;
+  const results=document.getElementById("results");
+  results.innerHTML="";
 
-  const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
-  const data = await res.json();
+  // Spotify embed search
+  const s=document.createElement("div");
+  s.className="item";
+  s.innerText="Play on Spotify";
+  s.onclick=()=>{
+    document.getElementById("now").innerText="Spotify: "+q;
+    document.getElementById("spotify").src =
+      "https://open.spotify.com/search/" + encodeURIComponent(q);
+  };
 
-  const results = document.getElementById("results");
-  results.innerHTML = "";
+  // Audius search
+  const a=document.createElement("div");
+  a.className="item";
+  a.innerText="Play on Audius";
 
-  data.forEach(track => {
-    const div = document.createElement("div");
-    div.className = "item";
-    div.innerHTML = `
-      <b>${track.title}</b><br/>
-      <small>${track.artist}</small>
-    `;
+  a.onclick=async()=>{
+    const res=await fetch("/api/audius?q="+q);
+    const data=await res.json();
 
-    div.onclick = () => play(track);
+    const track=data.data?.[0];
+    if(!track) return;
 
-    results.appendChild(div);
-  });
-}
+    document.getElementById("now").innerText =
+      "Audius: "+track.title;
 
-function play(track) {
-  document.getElementById("now").innerText =
-    track.title + " - " + track.artist;
+    document.getElementById("audius").src =
+      "https://audius.co/embed/track/"+track.id;
+  };
 
-  document.getElementById("audio").src = track.preview;
-
-  // optional iframe “visual shell”
-  document.getElementById("frame").src =
-    "about:blank";
+  results.appendChild(s);
+  results.appendChild(a);
 }
 </script>
 

@@ -2,5 +2,6 @@ services:
   - type: web
     name: harmony-v7
     env: node
+    rootDir: .
     buildCommand: npm install
     startCommand: npm start

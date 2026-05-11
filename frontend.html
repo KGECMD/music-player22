@@ -2,113 +2,52 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Harmony v6</title>
-
-<style>
-body{
-  margin:0;
-  font-family:system-ui;
-  background:#0b0b0b;
-  color:white;
-  display:grid;
-  grid-template-columns:320px 1fr;
-  height:100vh;
-}
-
-.panel{padding:14px;border-right:1px solid #222}
-
-input{
-  width:100%;
-  padding:12px;
-  background:#111;
-  border:1px solid #333;
-  color:white;
-}
-
-button{
-  width:100%;
-  margin-top:8px;
-  padding:10px;
-  background:#1a1a1a;
-  border:1px solid #333;
-  color:white;
-}
-
-.item{
-  margin-top:10px;
-  padding:10px;
-  background:#111;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-iframe{
-  width:100%;
-  height:50%;
-  border:none;
-  margin-top:10px;
-}
-</style>
+<title>Harmony v7</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="panel">
-  <h2>Harmony v6</h2>
+<div class="layout">
 
-  <input id="q" placeholder="Search music..." />
-  <button onclick="search()">Search</button>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>Harmony</h2>
 
-  <div id="results"></div>
+    <button onclick="view('search')">Search</button>
+    <button onclick="view('queue')">Queue</button>
+
+    <div class="mini-player">
+      <div id="now">Nothing playing</div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- SEARCH VIEW -->
+    <div id="searchView" class="view active">
+      <input id="q" placeholder="Search music..." />
+      <button onclick="search()">Search</button>
+
+      <div id="results"></div>
+    </div>
+
+    <!-- QUEUE VIEW -->
+    <div id="queueView" class="view">
+      <h3>Queue</h3>
+      <div id="queue"></div>
+    </div>
+
+  </div>
+
+  <!-- PLAYER -->
+  <div class="player">
+    <iframe id="spotify"></iframe>
+    <iframe id="audius"></iframe>
+  </div>
+
 </div>
 
-<div class="panel">
-  <h3>Now Playing</h3>
-  <div id="now">Nothing</div>
-
-  <iframe id="spotify"></iframe>
-  <iframe id="audius"></iframe>
-</div>
-
-<script>
-function search(){
-  const q=document.getElementById("q").value;
-  const results=document.getElementById("results");
-  results.innerHTML="";
-
-  // Spotify embed search
-  const s=document.createElement("div");
-  s.className="item";
-  s.innerText="Play on Spotify";
-  s.onclick=()=>{
-    document.getElementById("now").innerText="Spotify: "+q;
-    document.getElementById("spotify").src =
-      "https://open.spotify.com/search/" + encodeURIComponent(q);
-  };
-
-  // Audius search
-  const a=document.createElement("div");
-  a.className="item";
-  a.innerText="Play on Audius";
-
-  a.onclick=async()=>{
-    const res=await fetch("/api/audius?q="+q);
-    const data=await res.json();
-
-    const track=data.data?.[0];
-    if(!track) return;
-
-    document.getElementById("now").innerText =
-      "Audius: "+track.title;
-
-    document.getElementById("audius").src =
-      "https://audius.co/embed/track/"+track.id;
-  };
-
-  results.appendChild(s);
-  results.appendChild(a);
-}
-</script>
-
+<script src="app.js"></script>
 </body>
 </html>

@@ -1,51 +1,58 @@
-let queue = [];
+let queue = JSON.parse(localStorage.getItem("queue") || "[]");
+let currentIndex = 0;
 
-function view(v){
-  document.querySelectorAll(".view")
-    .forEach(x => x.classList.remove("active"));
-
-  document.getElementById(v).classList.add("active");
+function save(){
+  localStorage.setItem("queue", JSON.stringify(queue));
 }
 
-async function search(){
+function search(){
   const q = document.getElementById("q").value;
 
-  const res = await fetch("/api/audius?q=" + q);
-  const data = await res.json();
+  fetch("/api/audius?q=" + q)
+    .then(r => r.json())
+    .then(data => {
+      const results = document.getElementById("results");
+      results.innerHTML = "";
 
-  const results = document.getElementById("results");
-  results.innerHTML = "";
+      data.data.slice(0,10).forEach(t => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `${t.title}`;
 
-  data.forEach(t => {
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `${t.title} - ${t.artist}`;
+        div.onclick = () => {
+          queue.push(t);
+          save();
+          play(t);
+          renderQueue();
+        };
 
-    div.onclick = () => play(t);
-
-    results.appendChild(div);
-  });
+        results.appendChild(div);
+      });
+    });
 }
 
 function play(t){
+  const audio = document.getElementById("audio");
+
   document.getElementById("now").innerText = t.title;
 
-  const audio = document.getElementById("audio");
-  audio.src = t.stream;
+  audio.src = t.stream_url || "";
   audio.play();
-
-  queue.push(t);
-  renderQueue();
 }
 
 function renderQueue(){
   const q = document.getElementById("queueList");
+  if(!q) return;
+
   q.innerHTML = "";
 
-  queue.forEach(t => {
+  queue.forEach((t,i) => {
     const div = document.createElement("div");
     div.className = "card";
     div.innerText = t.title;
+
+    div.onclick = () => play(t);
+
     q.appendChild(div);
   });
 }

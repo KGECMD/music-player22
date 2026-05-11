@@ -1,26 +1,21 @@
-// server/index.js
-const express = require("express");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
 
 const app = express();
 app.use(cors());
+app.use(express.static("public"));
 
-// LEGAL music metadata API (iTunes)
-app.get("/api/search", async (req, res) => {
+// Audius search proxy (safe API usage)
+app.get("/api/audius", async (req, res) => {
   const q = req.query.q;
 
-  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&limit=15`;
+  const r = await fetch(
+    `https://discoveryprovider.audius.co/v1/tracks/search?query=${encodeURIComponent(q)}`
+  );
 
-  const data = await fetch(url).then(r => r.json());
-
-  const cleaned = data.results.map(t => ({
-    title: t.trackName || t.collectionName,
-    artist: t.artistName,
-    preview: t.previewUrl,
-    cover: t.artworkUrl100
-  }));
-
-  res.json(cleaned);
+  const data = await r.json();
+  res.json(data);
 });
 
-app.listen(3000, () => console.log("Server running"));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log("Harmony running on", PORT));

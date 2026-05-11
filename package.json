@@ -1,5 +1,5 @@
 {
-  "name": "harmony-v7",
+  "name": "harmony-v8",
   "version": "1.0.0",
   "type": "module",
   "main": "server/index.js",

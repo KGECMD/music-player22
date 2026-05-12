@@ -1,40 +1,79 @@
 // Player state
 let queue = JSON.parse(localStorage.getItem("harmonyQueue") || "[]");
+let downloads = JSON.parse(localStorage.getItem("harmonyDownloads") || "[]");
 let currentIndex = -1;
 let isPlaying = false;
+let repeatMode = 0; // 0: off, 1: all, 2: one
+let currentQuality = "320";
+let lastSearchResults = [];
 
 const audio = document.getElementById("audioPlayer");
 const resultsDiv = document.getElementById("results");
 const searchInput = document.getElementById("searchInput");
+const themeSelect = document.getElementById("themeSelect");
+const qualitySelect = document.getElementById("qualitySelect");
 
-// Initialize event listeners
-audio.addEventListener("ended", nextTrack);
+// Load saved theme and quality
+const savedTheme = localStorage.getItem("harmonyTheme") || "monochrome";
+const savedQuality = localStorage.getItem("harmonyQuality") || "320";
+setTheme(savedTheme);
+setQuality(savedQuality);
+themeSelect.value = savedTheme;
+qualitySelect.value = savedQuality;
+
+// Audio event listeners
+audio.addEventListener("ended", () => {
+  if (repeatMode === 2) {
+    audio.currentTime = 0;
+    audio.play();
+  } else {
+    nextTrack();
+  }
+});
 audio.addEventListener("timeupdate", updateProgress);
-audio.addEventListener("play", () => {
-  isPlaying = true;
-  updatePlayButton();
-});
-audio.addEventListener("pause", () => {
-  isPlaying = false;
-  updatePlayButton();
-});
+audio.addEventListener("play", () => { isPlaying = true; updatePlayButton(); });
+audio.addEventListener("pause", () => { isPlaying = false; updatePlayButton(); });
 
 searchInput.addEventListener("keypress", (e) => {
   if (e.key === "Enter") performSearch();
 });
 
+// Theme System
+function setTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("harmonyTheme", theme);
+}
+
+// Quality System
+function setQuality(quality) {
+  currentQuality = quality;
+  localStorage.setItem("harmonyQuality", quality);
+  const display = quality === "flac" ? "FLAC (HiFi)" : quality + " kbps";
+  console.log(`🔊 Quality set to ${display}`);
+}
+
+// Volume Control
+function setVolume(value) {
+  audio.volume = value / 100;
+  localStorage.setItem("harmonyVolume", value);
+}
+
+// Load saved volume
+const savedVolume = localStorage.getItem("harmonyVolume") || 70;
+document.getElementById("volumeSlider").value = savedVolume;
+audio.volume = savedVolume / 100;
+
 // View switching
 function switchView(view) {
-  // Hide all views
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
   document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
   
-  // Show selected view
   document.getElementById(view + "View").classList.add("active");
   event.target.classList.add("active");
   
-  // Render queue when switching to queue view
   if (view === "queue") renderQueue();
+  else if (view === "trending") loadTrending();
+  else if (view === "downloads") renderDownloads();
 }
 
 // Search functionality
@@ -42,7 +81,7 @@ function performSearch() {
   const query = searchInput.value.trim();
   if (!query) return;
   
-  resultsDiv.innerHTML = '<div class="loading">Searching...</div>';
+  resultsDiv.innerHTML = '<div class="loading">🔍 Searching...</div>';
   
   fetch(`/api/search?q=${encodeURIComponent(query)}`)
     .then(r => r.json())
@@ -54,6 +93,7 @@ function performSearch() {
         return;
       }
       
+      lastSearchResults = data.data;
       data.data.forEach((track, idx) => {
         const card = document.createElement("div");
         card.className = "card";
@@ -63,14 +103,14 @@ function performSearch() {
               <div class="card-title">${escapeHtml(track.title)}</div>
               <div class="card-artist">${escapeHtml(track.artist || "Unknown")}</div>
             </div>
-            <button class="card-btn" onclick="addToQueue(${idx})">+</button>
+            <div class="card-buttons">
+              <button class="card-btn" onclick="addToQueue(${idx})">+ Queue</button>
+              <button class="card-btn" onclick="downloadTrackDirect(${idx})">📥</button>
+            </div>
           </div>
         `;
         resultsDiv.appendChild(card);
       });
-      
-      // Store search results globally
-      window.lastSearchResults = data.data;
     })
     .catch(err => {
       console.error("Search failed:", err);
@@ -78,15 +118,53 @@ function performSearch() {
     });
 }
 
+// Load trending
+function loadTrending() {
+  const trendingDiv = document.getElementById("trendingResults");
+  trendingDiv.innerHTML = '<div class="loading">Loading trending...</div>';
+  
+  fetch("/api/trending")
+    .then(r => r.json())
+    .then(data => {
+      trendingDiv.innerHTML = "";
+      
+      if (!data.data || data.data.length === 0) {
+        trendingDiv.innerHTML = '<div class="no-results">No trending tracks</div>';
+        return;
+      }
+      
+      lastSearchResults = data.data;
+      data.data.forEach((track, idx) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="card-inner">
+            <div class="card-info">
+              <div class="card-title">${escapeHtml(track.title)}</div>
+              <div class="card-artist">${escapeHtml(track.artist || "Unknown")}</div>
+            </div>
+            <div class="card-buttons">
+              <button class="card-btn" onclick="addToQueue(${idx})">▶️</button>
+            </div>
+          </div>
+        `;
+        trendingDiv.appendChild(card);
+      });
+    })
+    .catch(err => {
+      console.error("Trending failed:", err);
+      trendingDiv.innerHTML = '<div class="error">Failed to load trending</div>';
+    });
+}
+
 // Queue management
 function addToQueue(index) {
-  if (!window.lastSearchResults || !window.lastSearchResults[index]) return;
+  if (!lastSearchResults || !lastSearchResults[index]) return;
   
-  const track = window.lastSearchResults[index];
+  const track = lastSearchResults[index];
   queue.push(track);
   saveQueue();
   
-  // Auto-play if nothing is playing
   if (currentIndex === -1) {
     currentIndex = queue.length - 1;
     playTrack(queue[currentIndex]);
@@ -115,8 +193,8 @@ function renderQueue() {
         <div class="queue-artist">${escapeHtml(track.artist || "Unknown")}</div>
       </div>
       <div class="queue-actions">
-        <button onclick="playIndex(${i})" class="play-btn">▶</button>
-        <button onclick="removeFromQueue(${i})" class="remove-btn">✕</button>
+        <button class="play-btn" onclick="playIndex(${i})">▶️</button>
+        <button class="remove-btn" onclick="removeFromQueue(${i})">✕</button>
       </div>
     `;
     queueList.appendChild(div);
@@ -128,14 +206,36 @@ function removeFromQueue(index) {
     audio.pause();
     isPlaying = false;
   }
-  
   queue.splice(index, 1);
-  if (currentIndex >= queue.length) {
-    currentIndex = queue.length - 1;
-  }
-  
+  if (currentIndex >= queue.length) currentIndex = queue.length - 1;
   saveQueue();
   renderQueue();
+}
+
+function shuffleQueue() {
+  for (let i = queue.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [queue[i], queue[j]] = [queue[j], queue[i]];
+  }
+  saveQueue();
+  renderQueue();
+  alert("🔀 Queue shuffled!");
+}
+
+function toggleRepeat() {
+  repeatMode = (repeatMode + 1) % 3;
+  const repeatBtn = document.getElementById("repeatBtn");
+  if (repeatMode === 0) {
+    repeatBtn.style.opacity = "0.5";
+    repeatBtn.title = "Repeat off";
+  } else if (repeatMode === 1) {
+    repeatBtn.style.opacity = "1";
+    repeatBtn.title = "Repeat all";
+  } else {
+    repeatBtn.style.opacity = "1";
+    repeatBtn.innerHTML = "🔂 Repeat One";
+    repeatBtn.title = "Repeat one";
+  }
 }
 
 function clearQueue() {
@@ -156,7 +256,7 @@ function saveQueue() {
 // Playback control
 function playTrack(track) {
   if (!track.stream_url) {
-    alert("No playable URL available for this track");
+    alert("No playable URL available");
     return;
   }
   
@@ -167,16 +267,17 @@ function playTrack(track) {
   document.getElementById("miniArtist").textContent = track.artist || "Unknown";
   document.getElementById("nowTitle").textContent = track.title;
   document.getElementById("nowArtist").textContent = track.artist || "Unknown";
+  document.getElementById("nowGenre").textContent = track.genre || "Music";
   
   audio.play();
   isPlaying = true;
   updatePlayButton();
+  renderQueue();
 }
 
 function playIndex(index) {
   currentIndex = index;
   playTrack(queue[index]);
-  renderQueue();
 }
 
 function togglePlay() {
@@ -196,21 +297,21 @@ function nextTrack() {
   if (queue.length === 0) return;
   currentIndex = (currentIndex + 1) % queue.length;
   playTrack(queue[currentIndex]);
-  renderQueue();
 }
 
 function previousTrack() {
   if (queue.length === 0) return;
-  currentIndex = (currentIndex - 1 + queue.length) % queue.length;
-  playTrack(queue[currentIndex]);
-  renderQueue();
+  if (audio.currentTime > 3) {
+    audio.currentTime = 0;
+  } else {
+    currentIndex = (currentIndex - 1 + queue.length) % queue.length;
+    playTrack(queue[currentIndex]);
+  }
 }
 
 function updatePlayButton() {
-  const btn = document.getElementById("mainPlayBtn");
-  const btn2 = document.getElementById("playBtn");
-  btn.textContent = isPlaying ? "⏸" : "▶";
-  if (btn2) btn2.textContent = isPlaying ? "⏸ Pause" : "▶ Play";
+  document.getElementById("mainPlayBtn").textContent = isPlaying ? "⏸️" : "▶️";
+  document.getElementById("playBtn").textContent = isPlaying ? "⏸️ Pause" : "▶️ Play";
 }
 
 function updateProgress() {
@@ -219,11 +320,13 @@ function updateProgress() {
   
   if (duration > 0) {
     const percent = (current / duration) * 100;
-    document.getElementById("progressFill").style.width = percent + "%";
+    document.getElementById("progressFillMain").style.width = percent + "%";
   }
   
   document.getElementById("currentTime").textContent = formatTime(current);
   document.getElementById("duration").textContent = formatTime(duration);
+  document.getElementById("currentTimeMain").textContent = formatTime(current);
+  document.getElementById("durationMain").textContent = formatTime(duration);
 }
 
 function formatTime(seconds) {
@@ -239,5 +342,76 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+// Download functionality
+function downloadTrackDirect(index) {
+  if (!lastSearchResults || !lastSearchResults[index]) return;
+  const track = lastSearchResults[index];
+  saveDownload(track);
+}
+
+function downloadTrack() {
+  if (currentIndex === -1 || !queue[currentIndex]) return;
+  const track = queue[currentIndex];
+  saveDownload(track);
+}
+
+function saveDownload(track) {
+  const download = {
+    id: track.id,
+    title: track.title,
+    artist: track.artist,
+    quality: currentQuality,
+    timestamp: new Date().toLocaleString(),
+    url: track.stream_url
+  };
+  
+  // Check if already downloaded
+  if (downloads.find(d => d.id === track.id)) {
+    alert("Already downloaded!");
+    return;
+  }
+  
+  downloads.push(download);
+  localStorage.setItem("harmonyDownloads", JSON.stringify(downloads));
+  alert(`✅ Downloaded: ${track.title}\nQuality: ${currentQuality === "flac" ? "FLAC" : currentQuality + " kbps"}`);
+}
+
+function renderDownloads() {
+  const downloadsList = document.getElementById("downloadsList");
+  const emptyMsg = document.getElementById("emptyDownloads");
+  
+  if (downloads.length === 0) {
+    downloadsList.innerHTML = "";
+    emptyMsg.style.display = "block";
+    return;
+  }
+  
+  emptyMsg.style.display = "none";
+  downloadsList.innerHTML = "";
+  
+  downloads.forEach((download, i) => {
+    const div = document.createElement("div");
+    div.className = "queue-item";
+    div.innerHTML = `
+      <div class="queue-info">
+        <div class="queue-title">${escapeHtml(download.title)}</div>
+        <div class="queue-artist">${escapeHtml(download.artist)} • ${download.quality === "flac" ? "FLAC" : download.quality + " kbps"}</div>
+        <div style="font-size:10px;color:#666;margin-top:4px;">${download.timestamp}</div>
+      </div>
+      <div class="queue-actions">
+        <button class="remove-btn" onclick="removeDownload(${i})">✕</button>
+      </div>
+    `;
+    downloadsList.appendChild(div);
+  });
+}
+
+function removeDownload(index) {
+  downloads.splice(index, 1);
+  localStorage.setItem("harmonyDownloads", JSON.stringify(downloads));
+  renderDownloads();
+}
+
 // Initialize
 renderQueue();
+updatePlayButton();

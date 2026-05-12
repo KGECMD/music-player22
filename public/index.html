@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Harmony - Music Player</title>
+  <title>Harmony - Music Player v2.0</title>
+  <link rel="stylesheet" href="themes.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -12,14 +13,54 @@
   <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="logo">🎵 Harmony</div>
+    
+    <div class="theme-selector">
+      <select id="themeSelect" onchange="setTheme(this.value)">
+        <option value="monochrome">Monochrome</option>
+        <option value="nord">Nord</option>
+        <option value="dracula">Dracula</option>
+        <option value="catppuccin">Catppuccin</option>
+        <option value="onedark">One Dark</option>
+        <option value="gruvbox">Gruvbox</option>
+        <option value="solarized">Solarized</option>
+        <option value="tokyonight">Tokyo Night</option>
+        <option value="ayu">Ayu</option>
+        <option value="palenight">Pale Night</option>
+        <option value="materialocean">Material Ocean</option>
+        <option value="synthwave">Synthwave</option>
+        <option value="cyberpunk">Cyberpunk</option>
+        <option value="deepblue">Deep Blue</option>
+        <option value="forestgreen">Forest Green</option>
+        <option value="lavender">Lavender</option>
+        <option value="sunset">Sunset</option>
+        <option value="ocean">Ocean</option>
+        <option value="forest">Forest</option>
+        <option value="macos">macOS Liquid</option>
+        <option value="windows">Windows Aero</option>
+      </select>
+    </div>
+    
     <nav class="nav">
-      <button class="nav-btn active" onclick="switchView('search')">Search</button>
-      <button class="nav-btn" onclick="switchView('queue')">Queue</button>
-      <button class="nav-btn" onclick="switchView('now')">Now Playing</button>
+      <button class="nav-btn active" onclick="switchView('search')">🔍 Search</button>
+      <button class="nav-btn" onclick="switchView('trending')">🔥 Trending</button>
+      <button class="nav-btn" onclick="switchView('queue')">📋 Queue</button>
+      <button class="nav-btn" onclick="switchView('now')">🎵 Now</button>
+      <button class="nav-btn" onclick="switchView('downloads')">📥 Downloads</button>
     </nav>
+    
+    <div class="quality-selector">
+      <label>Quality</label>
+      <select id="qualitySelect" onchange="setQuality(this.value)">
+        <option value="128">128 kbps</option>
+        <option value="256">256 kbps</option>
+        <option value="320" selected>320 kbps</option>
+        <option value="flac">FLAC (HiFi)</option>
+      </select>
+    </div>
+    
     <div class="mini-player">
       <div class="mini-title" id="miniTitle">Nothing playing</div>
-      <div class="mini-artist" id="miniArtist">Add a song to get started</div>
+      <div class="mini-artist" id="miniArtist">Select a song</div>
     </div>
   </div>
 
@@ -29,23 +70,28 @@
     <div id="searchView" class="view active">
       <h1>Search Music</h1>
       <div class="search-container">
-        <input 
-          id="searchInput" 
-          type="text" 
-          placeholder="Search for songs, artists..." 
-          autocomplete="off"
-        />
+        <input id="searchInput" type="text" placeholder="Search songs, artists..." />
         <button onclick="performSearch()" class="search-btn">Search</button>
       </div>
       <div id="results" class="results-grid"></div>
     </div>
 
+    <!-- TRENDING VIEW -->
+    <div id="trendingView" class="view">
+      <h1>🔥 Trending Now</h1>
+      <div id="trendingResults" class="results-grid"></div>
+    </div>
+
     <!-- QUEUE VIEW -->
     <div id="queueView" class="view">
       <h1>Queue</h1>
-      <button onclick="clearQueue()" class="clear-btn">Clear Queue</button>
+      <div class="queue-controls">
+        <button onclick="shuffleQueue()" class="queue-btn">🔀 Shuffle</button>
+        <button onclick="toggleRepeat()" class="queue-btn" id="repeatBtn">🔁 Repeat</button>
+        <button onclick="clearQueue()" class="queue-btn danger">🗑️ Clear</button>
+      </div>
       <div id="queueList" class="queue-list"></div>
-      <div id="emptyQueue" class="empty-message">Queue is empty. Search for songs to add.</div>
+      <div id="emptyQueue" class="empty-message">Queue is empty</div>
     </div>
 
     <!-- NOW PLAYING VIEW -->
@@ -54,29 +100,54 @@
         <div class="album-art" id="albumArt">🎵</div>
         <h2 id="nowTitle">Nothing playing</h2>
         <p id="nowArtist">-</p>
-        <div id="progress" class="progress"></div>
+        <p id="nowGenre" class="genre-tag">-</p>
+        <div class="progress-container">
+          <div id="progressBar" class="progress-bar"></div>
+          <div class="time-info">
+            <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+          </div>
+        </div>
         <div class="now-controls">
-          <button onclick="previousTrack()">⏮ Previous</button>
-          <button onclick="togglePlay()" id="playBtn">▶ Play</button>
-          <button onclick="nextTrack()">Next ⏭</button>
+          <button onclick="previousTrack()">⏮️ Previous</button>
+          <button onclick="togglePlay()" id="playBtn" class="play-btn">▶️ Play</button>
+          <button onclick="nextTrack()">Next ⏭️</button>
+          <button onclick="downloadTrack()" id="downloadBtn">📥 Download</button>
+        </div>
+        <div class="volume-control">
+          <label>Volume:</label>
+          <input type="range" min="0" max="100" value="70" id="volumeSlider" onchange="setVolume(this.value)">
         </div>
       </div>
     </div>
+
+    <!-- DOWNLOADS VIEW -->
+    <div id="downloadsView" class="view">
+      <h1>📥 Downloaded Tracks</h1>
+      <div id="downloadsList" class="queue-list"></div>
+      <div id="emptyDownloads" class="empty-message">No downloads yet</div>
+    </div>
   </div>
 
-  <!-- PLAYER -->
+  <!-- PLAYER PANEL -->
   <div class="player-panel">
-    <audio id="audioPlayer" style="display:none;"></audio>
+    <audio id="audioPlayer"></audio>
     <div class="player-info">
-      <div id="currentTrackDisplay">No track loaded</div>
+      <div id="currentTrackDisplay" class="track-display">No track loaded</div>
+      <div class="player-visualizer">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
       <div class="player-controls">
-        <button onclick="togglePlay()" class="play-control" id="mainPlayBtn">▶</button>
+        <button onclick="togglePlay()" class="play-control" id="mainPlayBtn">▶️</button>
       </div>
-      <div class="progress-bar">
-        <div id="progressFill" class="progress-fill"></div>
+      <div class="progress-bar-main">
+        <div id="progressFillMain" class="progress-fill"></div>
       </div>
-      <div class="time-display">
-        <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+      <div class="time-display-main">
+        <span id="currentTimeMain">0:00</span> / <span id="durationMain">0:00</span>
       </div>
     </div>
   </div>

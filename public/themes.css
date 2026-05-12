@@ -1,0 +1,317 @@
+/* MONOCHROME THEME */
+:root[data-theme="monochrome"] {
+  --primary: #ffffff;
+  --secondary: #f5f5f5;
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #888888;
+  --accent: #666666;
+  --border: #222222;
+}
+
+/* NORD THEME */
+:root[data-theme="nord"] {
+  --primary: #88c0d0;
+  --secondary: #81a1c1;
+  --bg-primary: #2e3440;
+  --bg-secondary: #3b4252;
+  --bg-tertiary: #434c5e;
+  --text-primary: #eceff4;
+  --text-secondary: #d8dee9;
+  --accent: #5e81ac;
+  --border: #4c566a;
+}
+
+/* DRACULA THEME */
+:root[data-theme="dracula"] {
+  --primary: #ff79c6;
+  --secondary: #8be9fd;
+  --bg-primary: #282a36;
+  --bg-secondary: #21222c;
+  --bg-tertiary: #44475a;
+  --text-primary: #f8f8f2;
+  --text-secondary: #6272a4;
+  --accent: #bd93f9;
+  --border: #6272a4;
+}
+
+/* CATPPUCCIN THEME */
+:root[data-theme="catppuccin"] {
+  --primary: #f38ba8;
+  --secondary: #89b4fa;
+  --bg-primary: #1e1e2e;
+  --bg-secondary: #313244;
+  --bg-tertiary: #45475a;
+  --text-primary: #cdd6f4;
+  --text-secondary: #a6adc8;
+  --accent: #94e2d5;
+  --border: #585b70;
+}
+
+/* ONE DARK THEME */
+:root[data-theme="onedark"] {
+  --primary: #61afef;
+  --secondary: #56b6c2;
+  --bg-primary: #282c34;
+  --bg-secondary: #21252b;
+  --bg-tertiary: #3e4451;
+  --text-primary: #abb2bf;
+  --text-secondary: #828997;
+  --accent: #c678dd;
+  --border: #5c6370;
+}
+
+/* GRUVBOX THEME */
+:root[data-theme="gruvbox"] {
+  --primary: #fe8019;
+  --secondary: #fabd2f;
+  --bg-primary: #282828;
+  --bg-secondary: #3c3836;
+  --bg-tertiary: #504945;
+  --text-primary: #ebdbb2;
+  --text-secondary: #928374;
+  --accent: #8f3f71;
+  --border: #665c54;
+}
+
+/* SOLARIZED THEME */
+:root[data-theme="solarized"] {
+  --primary: #268bd2;
+  --secondary: #2aa198;
+  --bg-primary: #002b36;
+  --bg-secondary: #073642;
+  --bg-tertiary: #586e75;
+  --text-primary: #93a1a1;
+  --text-secondary: #839496;
+  --accent: #b58900;
+  --border: #073642;
+}
+
+/* TOKYO NIGHT THEME */
+:root[data-theme="tokyonight"] {
+  --primary: #7aa2f7;
+  --secondary: #bb9af7;
+  --bg-primary: #1a1b26;
+  --bg-secondary: #16161e;
+  --bg-tertiary: #292e42;
+  --text-primary: #c0caf5;
+  --text-secondary: #565f89;
+  --accent: #f7768e;
+  --border: #3b4261;
+}
+
+/* AYU THEME */
+:root[data-theme="ayu"] {
+  --primary: #59c2ff;
+  --secondary: #95e1d3;
+  --bg-primary: #0f1419;
+  --bg-secondary: #151a1f;
+  --bg-tertiary: #1f2430;
+  --text-primary: #e6e1cf;
+  --text-secondary: #626a73;
+  --accent: #ffb454;
+  --border: #242a37;
+}
+
+/* PALE NIGHT THEME */
+:root[data-theme="palenight"] {
+  --primary: #82b1ff;
+  --secondary: #80cbc4;
+  --bg-primary: #292d3e;
+  --bg-secondary: #2c3e50;
+  --bg-tertiary: #444a56;
+  --text-primary: #b0bec5;
+  --text-secondary: #78909c;
+  --accent: #c792ea;
+  --border: #37474f;
+}
+
+/* MATERIAL OCEAN THEME */
+:root[data-theme="materialocean"] {
+  --primary: #80cbc4;
+  --secondary: #ffcb8b;
+  --bg-primary: #0f111b;
+  --bg-secondary: #1a1f2e;
+  --bg-tertiary: #22283a;
+  --text-primary: #eeffff;
+  --text-secondary: #546e7a;
+  --accent: #82b1ff;
+  --border: #2e3f4f;
+}
+
+/* SYNTHWAVE THEME */
+:root[data-theme="synthwave"] {
+  --primary: #ff006e;
+  --secondary: #08f7fe;
+  --bg-primary: #0a0e27;
+  --bg-secondary: #16213e;
+  --bg-tertiary: #0f3460;
+  --text-primary: #eaeaea;
+  --text-secondary: #ff006e;
+  --accent: #08f7fe;
+  --border: #ff006e;
+}
+
+/* CYBERPUNK THEME */
+:root[data-theme="cyberpunk"] {
+  --primary: #00ff41;
+  --secondary: #ff006e;
+  --bg-primary: #0d0221;
+  --bg-secondary: #1a0033;
+  --bg-tertiary: #320064;
+  --text-primary: #00ff41;
+  --text-secondary: #ff006e;
+  --accent: #00d9ff;
+  --border: #00ff41;
+}
+
+/* DEEP BLUE THEME */
+:root[data-theme="deepblue"] {
+  --primary: #00bfff;
+  --secondary: #1e90ff;
+  --bg-primary: #001a33;
+  --bg-secondary: #003366;
+  --bg-tertiary: #004d99;
+  --text-primary: #e0f2ff;
+  --text-secondary: #99ccff;
+  --accent: #66d9ff;
+  --border: #0066cc;
+}
+
+/* FOREST GREEN THEME */
+:root[data-theme="forestgreen"] {
+  --primary: #2ecc71;
+  --secondary: #27ae60;
+  --bg-primary: #0b2e0f;
+  --bg-secondary: #145a0d;
+  --bg-tertiary: #1e7816;
+  --text-primary: #d5f4dd;
+  --text-secondary: #7fb37f;
+  --accent: #52de97;
+  --border: #2d5a32;
+}
+
+/* LAVENDER THEME */
+:root[data-theme="lavender"] {
+  --primary: #d8b9ff;
+  --secondary: #b39ddb;
+  --bg-primary: #3e2c54;
+  --bg-secondary: #54387e;
+  --bg-tertiary: #6c5aa1;
+  --text-primary: #f3f0ff;
+  --text-secondary: #b39ddb;
+  --accent: #d8b9ff;
+  --border: #735caa;
+}
+
+/* SUNSET THEME */
+:root[data-theme="sunset"] {
+  --primary: #ff6b6b;
+  --secondary: #ffa500;
+  --bg-primary: #1a0a0a;
+  --bg-secondary: #4d1f0f;
+  --bg-tertiary: #7a3a2a;
+  --text-primary: #ffe4d6;
+  --text-secondary: #ff9966;
+  --accent: #ffb366;
+  --border: #ff6b6b;
+}
+
+/* OCEAN THEME */
+:root[data-theme="ocean"] {
+  --primary: #00d4ff;
+  --secondary: #0099cc;
+  --bg-primary: #001f2e;
+  --bg-secondary: #003a52;
+  --bg-tertiary: #004d66;
+  --text-primary: #b3e5fc;
+  --text-secondary: #4dd0e1;
+  --accent: #00e5ff;
+  --border: #0099cc;
+}
+
+/* FOREST THEME */
+:root[data-theme="forest"] {
+  --primary: #7cb342;
+  --secondary: #558b2f;
+  --bg-primary: #1b5e20;
+  --bg-secondary: #2e7d32;
+  --bg-tertiary: #388e3c;
+  --text-primary: #e8f5e9;
+  --text-secondary: #81c784;
+  --accent: #9ccc65;
+  --border: #558b2f;
+}
+
+/* macOS LIQUID THEME */
+:root[data-theme="macos"] {
+  --primary: #ffffff;
+  --secondary: #f5f5f7;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f7;
+  --bg-tertiary: #e8e8eb;
+  --text-primary: #000000;
+  --text-secondary: #666666;
+  --accent: #0071e3;
+  --border: #d5d5d7;
+}
+
+/* WINDOWS AERO THEME */
+:root[data-theme="windows"] {
+  --primary: #0078d4;
+  --secondary: #0063b1;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f3f3;
+  --bg-tertiary: #e0e0e0;
+  --text-primary: #000000;
+  --text-secondary: #666666;
+  --accent: #0078d4;
+  --border: #bfbfbf;
+}
+
+/* Apply theme to all elements */
+body, html {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.sidebar, .main, .player-panel {
+  background-color: var(--bg-secondary);
+  border-color: var(--border);
+}
+
+.nav-btn, .card, .queue-item, button {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.nav-btn:hover, .card:hover, .queue-item:hover, button:hover {
+  background-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.nav-btn.active, .play-btn {
+  background-color: var(--primary);
+  color: var(--bg-primary);
+}
+
+a, .accent {
+  color: var(--accent);
+}
+
+input[type="text"], input[type="range"], select {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.progress-bar, .progress-fill {
+  background-color: var(--accent);
+}
+
+.time-info, .text-secondary {
+  color: var(--text-secondary);
+}

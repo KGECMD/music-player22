@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harmony - Music Player</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo">🎵 Harmony</div>
+    <nav class="nav">
+      <button class="nav-btn active" onclick="switchView('search')">Search</button>
+      <button class="nav-btn" onclick="switchView('queue')">Queue</button>
+      <button class="nav-btn" onclick="switchView('now')">Now Playing</button>
+    </nav>
+    <div class="mini-player">
+      <div class="mini-title" id="miniTitle">Nothing playing</div>
+      <div class="mini-artist" id="miniArtist">Add a song to get started</div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <!-- SEARCH VIEW -->
+    <div id="searchView" class="view active">
+      <h1>Search Music</h1>
+      <div class="search-container">
+        <input 
+          id="searchInput" 
+          type="text" 
+          placeholder="Search for songs, artists..." 
+          autocomplete="off"
+        />
+        <button onclick="performSearch()" class="search-btn">Search</button>
+      </div>
+      <div id="results" class="results-grid"></div>
+    </div>
+
+    <!-- QUEUE VIEW -->
+    <div id="queueView" class="view">
+      <h1>Queue</h1>
+      <button onclick="clearQueue()" class="clear-btn">Clear Queue</button>
+      <div id="queueList" class="queue-list"></div>
+      <div id="emptyQueue" class="empty-message">Queue is empty. Search for songs to add.</div>
+    </div>
+
+    <!-- NOW PLAYING VIEW -->
+    <div id="nowView" class="view">
+      <div class="now-playing-container">
+        <div class="album-art" id="albumArt">🎵</div>
+        <h2 id="nowTitle">Nothing playing</h2>
+        <p id="nowArtist">-</p>
+        <div id="progress" class="progress"></div>
+        <div class="now-controls">
+          <button onclick="previousTrack()">⏮ Previous</button>
+          <button onclick="togglePlay()" id="playBtn">▶ Play</button>
+          <button onclick="nextTrack()">Next ⏭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAYER -->
+  <div class="player-panel">
+    <audio id="audioPlayer" style="display:none;"></audio>
+    <div class="player-info">
+      <div id="currentTrackDisplay">No track loaded</div>
+      <div class="player-controls">
+        <button onclick="togglePlay()" class="play-control" id="mainPlayBtn">▶</button>
+      </div>
+      <div class="progress-bar">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+      <div class="time-display">
+        <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

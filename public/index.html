@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Harmony - Music Player v2.0</title>
+  <meta name="description" content="Harmony - HiFi Music Player. Stream from Tidal, Audius, and more.">
+  <title>🎵 Harmony - HiFi Music Player</title>
   <link rel="stylesheet" href="themes.css">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -13,8 +14,10 @@
   <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="logo">🎵 Harmony</div>
+    <div class="version">v3.0 HiFi</div>
     
     <div class="theme-selector">
+      <label>Theme</label>
       <select id="themeSelect" onchange="setTheme(this.value)">
         <option value="monochrome">Monochrome</option>
         <option value="nord">Nord</option>
@@ -40,13 +43,14 @@
       </select>
     </div>
     
-    <nav class="nav">
-      <button class="nav-btn active" onclick="switchView('search')">🔍 Search</button>
-      <button class="nav-btn" onclick="switchView('trending')">🔥 Trending</button>
-      <button class="nav-btn" onclick="switchView('queue')">📋 Queue</button>
-      <button class="nav-btn" onclick="switchView('now')">🎵 Now</button>
-      <button class="nav-btn" onclick="switchView('downloads')">📥 Downloads</button>
-    </nav>
+    <div class="source-selector">
+      <label>Source</label>
+      <div class="source-pills">
+        <button class="source-pill active" data-source="all" onclick="setSource('all')">All</button>
+        <button class="source-pill" data-source="tidal" onclick="setSource('tidal')">Tidal</button>
+        <button class="source-pill" data-source="audius" onclick="setSource('audius')">Audius</button>
+      </div>
+    </div>
     
     <div class="quality-selector">
       <label>Quality</label>
@@ -54,77 +58,111 @@
         <option value="128">128 kbps</option>
         <option value="256">256 kbps</option>
         <option value="320" selected>320 kbps</option>
-        <option value="flac">FLAC (HiFi)</option>
+        <option value="hifi">HiFi FLAC</option>
       </select>
     </div>
+    
+    <nav class="nav">
+      <button class="nav-btn active" onclick="switchView('search')">🔍 Search</button>
+      <button class="nav-btn" onclick="switchView('trending')">🔥 Trending</button>
+      <button class="nav-btn" onclick="switchView('queue')">📋 Queue</button>
+      <button class="nav-btn" onclick="switchView('now')">🎵 Playing</button>
+      <button class="nav-btn" onclick="switchView('settings')">⚙️ Settings</button>
+    </nav>
     
     <div class="mini-player">
       <div class="mini-title" id="miniTitle">Nothing playing</div>
       <div class="mini-artist" id="miniArtist">Select a song</div>
+      <div class="mini-quality" id="miniQuality">-</div>
     </div>
   </div>
 
   <!-- MAIN CONTENT -->
   <div class="main">
-    <!-- SEARCH VIEW -->
+    <!-- SEARCH -->
     <div id="searchView" class="view active">
       <h1>Search Music</h1>
       <div class="search-container">
         <input id="searchInput" type="text" placeholder="Search songs, artists..." />
-        <button onclick="performSearch()" class="search-btn">Search</button>
+        <button onclick="performSearch()" class="search-btn">🔍</button>
       </div>
+      <div id="searchStatus" class="search-status"></div>
       <div id="results" class="results-grid"></div>
     </div>
 
-    <!-- TRENDING VIEW -->
+    <!-- TRENDING -->
     <div id="trendingView" class="view">
       <h1>🔥 Trending Now</h1>
+      <button onclick="loadTrending()" class="refresh-btn">Refresh</button>
       <div id="trendingResults" class="results-grid"></div>
     </div>
 
-    <!-- QUEUE VIEW -->
+    <!-- QUEUE -->
     <div id="queueView" class="view">
-      <h1>Queue</h1>
+      <h1>📋 Queue</h1>
       <div class="queue-controls">
         <button onclick="shuffleQueue()" class="queue-btn">🔀 Shuffle</button>
         <button onclick="toggleRepeat()" class="queue-btn" id="repeatBtn">🔁 Repeat</button>
         <button onclick="clearQueue()" class="queue-btn danger">🗑️ Clear</button>
       </div>
       <div id="queueList" class="queue-list"></div>
-      <div id="emptyQueue" class="empty-message">Queue is empty</div>
+      <div id="emptyQueue" class="empty-message">Queue is empty. Add songs to begin.</div>
     </div>
 
-    <!-- NOW PLAYING VIEW -->
+    <!-- NOW PLAYING -->
     <div id="nowView" class="view">
       <div class="now-playing-container">
         <div class="album-art" id="albumArt">🎵</div>
         <h2 id="nowTitle">Nothing playing</h2>
         <p id="nowArtist">-</p>
-        <p id="nowGenre" class="genre-tag">-</p>
+        <p id="nowSource" class="source-tag">-</p>
+        <p id="nowQuality" class="quality-tag">-</p>
+        
         <div class="progress-container">
           <div id="progressBar" class="progress-bar"></div>
           <div class="time-info">
             <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
           </div>
         </div>
+        
         <div class="now-controls">
           <button onclick="previousTrack()">⏮️ Previous</button>
           <button onclick="togglePlay()" id="playBtn" class="play-btn">▶️ Play</button>
           <button onclick="nextTrack()">Next ⏭️</button>
-          <button onclick="downloadTrack()" id="downloadBtn">📥 Download</button>
         </div>
+        
         <div class="volume-control">
-          <label>Volume:</label>
+          <label>Volume</label>
           <input type="range" min="0" max="100" value="70" id="volumeSlider" onchange="setVolume(this.value)">
         </div>
       </div>
     </div>
 
-    <!-- DOWNLOADS VIEW -->
-    <div id="downloadsView" class="view">
-      <h1>📥 Downloaded Tracks</h1>
-      <div id="downloadsList" class="queue-list"></div>
-      <div id="emptyDownloads" class="empty-message">No downloads yet</div>
+    <!-- SETTINGS -->
+    <div id="settingsView" class="view">
+      <h1>⚙️ Settings</h1>
+      <div class="settings-grid">
+        <div class="setting-item">
+          <h3>About</h3>
+          <p>Harmony v3.0 - HiFi Music Player</p>
+          <p>Powered by Tidal, Audius, Lucida APIs</p>
+        </div>
+        <div class="setting-item">
+          <h3>Storage</h3>
+          <p id="storageInfo">Loading...</p>
+          <button onclick="clearAllData()">🗑️ Clear All Data</button>
+        </div>
+        <div class="setting-item">
+          <h3>Keyboard</h3>
+          <ul>
+            <li><code>Space</code> - Play/Pause</li>
+            <li><code>→</code> - Next</li>
+            <li><code>←</code> - Previous</li>
+            <li><code>↑</code> - Volume +</li>
+            <li><code>↓</code> - Volume -</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 

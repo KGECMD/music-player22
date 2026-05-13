@@ -1,124 +1,121 @@
-# 🎵 Harmony Music Player
+# 🎵 Harmony Music Player v3.0
 
-A modern, minimal music player built with Node.js and vanilla JavaScript. Features a monochrome aesthetic with seamless integration to the Audius music API.
+**HiFi Music Streaming Player** with support for Tidal, Audius, and Lucida APIs
 
-## Features
+## ✨ Features
 
-✨ **Clean Monochrome UI** - Minimal dark theme with glass-morphic design  
-🔍 **Search** - Real-time music search powered by Audius API  
-📋 **Queue Management** - Add, remove, and organize tracks  
-⏯️ **Playback Controls** - Play, pause, skip, and navigate queue  
-💾 **Local Storage** - Queue persists between sessions  
-📱 **Responsive Design** - Works on desktop and mobile  
-🚀 **Zero Ads** - Free and open-source  
+- 🎵 **Multi-Source Streaming**: Tidal (HiFi), Audius (Free), Lucida (QQDL)
+- 🎨 **20 Professional Themes**: Nord, Dracula, macOS, Windows, and more
+- 🔊 **HiFi Quality**: Up to FLAC lossless audio
+- 📱 **Fully Responsive**: Desktop, tablet, and mobile
+- ⌨️ **Keyboard Shortcuts**: Space (play), arrows (skip/volume)
+- 🎮 **Rich Controls**: Shuffle, repeat, volume, equalizer
+- 💾 **Local Persistence**: Queue, settings, preferences saved
+- ⚡ **Fast & Reliable**: Optimized for Render & Vercel
 
-## Tech Stack
+## 🚀 Deploy
+
+### Render (Recommended)
+```bash
+1. Push to GitHub
+2. Go to render.com
+3. Create Web Service
+4. Connect repo
+5. Deploy! (auto-detects render.yaml)
+```
+
+### Vercel
+```bash
+1. Push to GitHub
+2. Go to vercel.com
+3. Import project
+4. Deploy! (auto-detects vercel.json)
+```
+
+### Local
+```bash
+npm install
+npm start
+# Visit http://localhost:3000
+```
+
+## 📡 API Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/search?q=query` | Search all sources |
+| `GET /api/search/tidal?q=query` | Search Tidal HiFi |
+| `GET /api/search/audius?q=query` | Search Audius |
+| `GET /api/trending` | Trending tracks |
+| `GET /api/health` | Health check |
+
+## 🎨 Themes (20+)
+
+1. Monochrome
+2. Nord
+3. Dracula
+4. Catppuccin
+5. One Dark
+6. Gruvbox
+7. Solarized
+8. Tokyo Night
+9. Ayu
+10. Pale Night
+11. Material Ocean
+12. Synthwave
+13. Cyberpunk
+14. Deep Blue
+15. Forest Green
+16. Lavender
+17. Sunset
+18. Ocean
+19. Forest
+20. macOS Liquid
+21. Windows Aero
+
+## 🔊 Quality Options
+
+- 128 kbps (Streaming)
+- 256 kbps (High)
+- 320 kbps (Very High)
+- HiFi FLAC (Lossless)
+
+## 🎹 Keyboard Shortcuts
+
+- `Space` - Play/Pause
+- `→` - Next track
+- `←` - Previous track
+- `↑` - Volume up
+- `↓` - Volume down
+
+## 🔗 Sources
+
+- **Tidal**: `https://hifi.geeked.wtf` (Primary)
+- **Audius**: `https://discoveryprovider.audius.co`
+- **Lucida**: Multiple endpoints for redundancy
+
+## 🛠️ Tech Stack
 
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **Backend**: Node.js + Express
-- **API**: Audius Discovery Provider
-- **Deployment**: Render
+- **Backend**: Node.js, Express
+- **Deployment**: Render, Vercel, Heroku
+- **APIs**: Tidal, Audius, Lucida, geeked.wtf
 
-## Installation & Local Setup
+## ✅ Status
 
-```bash
-# Install dependencies
-npm install
+- ✓ All themes working
+- ✓ Multi-source API integration
+- ✓ HiFi quality support
+- ✓ Keyboard shortcuts
+- ✓ Mobile responsive
+- ✓ Error handling
+- ✓ Production ready
+- ✓ Render compatible
+- ✓ Vercel compatible
 
-# Start development server
-npm start
+## 📝 License
 
-# Open browser to http://localhost:3000
-```
-
-## Project Structure
-
-```
-.
-├── server/
-│   └── index.js          # Express server & API routes
-├── public/
-│   ├── index.html        # Main UI
-│   ├── app.js            # Frontend logic
-│   └── styles.css        # Monochrome styling
-├── package.json          # Dependencies
-└── render.yaml           # Deployment config
-```
-
-## API Endpoints
-
-### Search Music
-```
-GET /api/search?q=<query>
-```
-Returns matching tracks with stream URLs
-
-### Health Check
-```
-GET /api/health
-```
-
-## Features Implemented
-
-✅ Search functionality with Audius API  
-✅ Queue management (add, remove, clear)  
-✅ Playback control (play, pause, next, previous)  
-✅ Local storage persistence  
-✅ Progress tracking  
-✅ Mini player display  
-✅ Now playing view  
-✅ Responsive layout  
-✅ Error handling  
-✅ Mobile-friendly controls  
-
-## Fixed Issues
-
-- ✅ Corrected CSS file reference (style.css → styles.css)
-- ✅ Implemented missing view switching logic
-- ✅ Fixed queue list rendering
-- ✅ Added proper audio player implementation
-- ✅ Created public directory structure
-- ✅ Implemented Audius API integration
-- ✅ Added proper server structure
-- ✅ Fixed all JavaScript errors
-
-## Deploy to Render
-
-1. Push code to GitHub
-2. Connect repo to Render (https://render.com)
-3. Select "Web Service"
-4. Choose Node environment
-5. Use `render.yaml` config
-6. Deploy!
-
-Your app will be live at: `https://<your-service-name>.onrender.com`
-
-## Environment Variables
-
-No environment variables required - API uses public endpoints.
-
-Optional for Render:
-- `NODE_ENV=production`
-- `PORT=3000` (Render sets automatically)
-
-## Future Improvements
-
-- [ ] Spotify integration
-- [ ] YouTube Music support
-- [ ] User authentication
-- [ ] Playlist creation
-- [ ] Dark/Light theme toggle
-- [ ] Shuffle & repeat modes
-- [ ] Volume control
-- [ ] Equalizer
-
-## License
-
-MIT - Feel free to use and modify
-
-## Support
-
-For issues or suggestions, open a GitHub issue.
+MIT - Open source
 
 ---
 
